@@ -6,30 +6,35 @@ using UnityEngine.Events;
 
 public class Brick : MonoBehaviour
 {
-    public UnityEvent<int> onDestroyed;
-    
     public int PointValue;
+    public UnityEvent<int> onDestroyed;
 
     void Start()
     {
         var renderer = GetComponentInChildren<Renderer>();
-
         MaterialPropertyBlock block = new MaterialPropertyBlock();
+        
         switch (PointValue)
         {
             case 1 :
-                block.SetColor("_BaseColor", Color.green);
+                // These were not setting the color correctly for me!
+                //block.SetColor("_BaseColor", Color.green);
+                renderer.material.color = Color.green;
                 break;
             case 2:
-                block.SetColor("_BaseColor", Color.yellow);
+                //block.SetColor("_BaseColor", Color.yellow);
+                renderer.material.color = Color.yellow;
                 break;
             case 5:
-                block.SetColor("_BaseColor", Color.blue);
+                //block.SetColor("_BaseColor", Color.blue);
+                renderer.material.color = Color.blue;
                 break;
             default:
-                block.SetColor("_BaseColor", Color.red);
+                //block.SetColor("_BaseColor", Color.red);
+                renderer.material.color = Color.red;
                 break;
         }
+        
         renderer.SetPropertyBlock(block);
     }
 
