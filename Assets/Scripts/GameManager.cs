@@ -10,21 +10,23 @@ public class GameManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
     public Text ScoreText;
+    public Text HighScoreText;
     public GameObject GameOverText;
     public static GameManager Instance;
 
     private bool _isGameStarted = false;
-    private int _currentPoints;
-    private string _currentPlayer;
     private bool _isGameOver = false;
-    private HighScoreData _currentData = new();
 
     private void Awake()
+    {
+        CheckSingletonInstance();
+    }
+
+    private void CheckSingletonInstance()
     {
         if (Instance != null)
         {
             Destroy(Instance);
-            return;
         }
 
         Instance = this;
@@ -34,9 +36,22 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        ResetCurrentPlayerScore();
+        SetHighScoreUI();
         PlaceBlocks();
     }
-    
+
+    /// <summary>
+    /// Set the UIs high score on screen
+    /// </summary>
+    private void SetHighScoreUI()
+    {
+        // get the high score name and score
+        HighScoreData highScore = SaveUtility.LoadData();
+        // display on screen
+        SetHighScoreText(highScore.PlayerName, highScore.Score);
+    }
+
     private void Update()
     {
         if (!_isGameStarted)
@@ -94,11 +109,20 @@ public class GameManager : MonoBehaviour
     /// Add a points to the ui display 
     /// </summary>
     /// <param name="point"></param>
-    public void AddPoint(int point)
+    private void AddPoint(int point)
     {
-        _currentPoints += point;
-        _currentData.Score = _currentPoints;
-        ScoreText.text = $"Score : {_currentPoints}";
+        CurrentGameData.Instance.Score += point;
+        ScoreText.text = $"Score : {CurrentGameData.Instance.Score}";
+    }
+
+    /// <summary>
+    /// Set the high score text on screen
+    /// </summary>
+    /// <param name="name">player name to show</param>
+    /// <param name="score">player high score to display</param>
+    private void SetHighScoreText(string name, int score)
+    {
+        HighScoreText.text = $"High Score: {name} {score}";
     }
 
     /// <summary>
@@ -107,15 +131,14 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         // get high score for this player data
-        // check for a high score
         HighScoreData highScore = SaveUtility.LoadData();
-        
-        // check if the number is > highscore
         // check for a high score
-        if (_currentData.Score > highScore.Score)
+        if (CurrentGameData.Instance.Score > highScore.Score)
         {
             // a new high score save it and display it
-            SaveUtility.SaveData(_currentData);
+            SaveUtility.SaveData(CurrentGameData.Instance.PlayerName, CurrentGameData.Instance.Score);
+            // show high score text
+            SetHighScoreText(CurrentGameData.Instance.PlayerName, CurrentGameData.Instance.Score);
         }
         
         _isGameOver = true;
@@ -127,16 +150,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ResetCurrentPlayerScore()
     {
-        _currentData.Score = 0;
-    }
-
-    /// <summary>
-    ///  Saves the player data into the current player
-    /// </summary>
-    /// <param name="playerData"></param>
-    public void SetPlayerData(HighScoreData playerData)
-    {
-        _currentData.PlayerName = playerData.PlayerName;
-        _currentData.Score = playerData.Score;
+        CurrentGameData.Instance.Score = 0;
     }
 }
