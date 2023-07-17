@@ -2,7 +2,7 @@
 [System.Serializable]
 public class HighScoreData
 {
-    public string PlayerName;
-    public string Score;
-    public string Rank;
+    public string PlayerName = string.Empty;
+    public int Score = 0;
+    public string Rank; // may not use not sure yet
 }

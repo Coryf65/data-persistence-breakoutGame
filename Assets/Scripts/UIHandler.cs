@@ -3,19 +3,25 @@ using UnityEngine;
 using TMPro;
 using UnityEditor;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
+
+// TODO: https://github.com/Zhangshuzz/Data-Persistence-Project/blob/main/Assets/Scripts/DeathZone.cs
+// TODO: https://github.com/yuzu-tamaki/Unity-Learn-DataPersistance/blob/main/Assets/Scripts/UIBestScore.cs
+// https://learn.unity.com/tutorial/submission-data-persistence-in-a-new-repo#60b7cfceedbc2a001fe28b61
 
 /// <summary>
 /// Handle UI interactions
 /// </summary>
+[DefaultExecutionOrder(1000)]
 public class UIHandler : MonoBehaviour
 {
-    public TMP_InputField playerNameInput;
-    public string levelName;
+    public TMP_InputField PlayerNameInput;
+    public string LevelName;
 
     private void Start()
     {
         // Track when a player types in our input field
-        playerNameInput.onValueChanged.AddListener(UpdatedPlayerNameInput);
+        PlayerNameInput.onValueChanged.AddListener(UpdatedPlayerNameInput);
     }
 
     /// <summary>
@@ -38,10 +44,14 @@ public class UIHandler : MonoBehaviour
         // if the player name is empty ? give a default ?
         HighScoreData data = new()
         {
-            PlayerName = playerNameInput.text
+            PlayerName = PlayerNameInput.text,
+            Score = 0
         };
+
+        Debug.Log(data);
         
         SaveUtility.SaveData(data);
+        //GameManager.Instance.SetPlayerData(data);
     }
 
     /// <summary>
@@ -59,7 +69,7 @@ public class UIHandler : MonoBehaviour
     public void LoadLevel()
     {
         SavePlayerName();
-        SceneManager.LoadScene(levelName);
+        SceneManager.LoadScene(LevelName);
     }
 
     /// <summary>
